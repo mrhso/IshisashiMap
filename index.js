@@ -33,6 +33,7 @@ const recoverOLC = (olc, lat, lon, gcj = true) => {
 };
 
 // OLC 转 GCJ-02
+// 中国以外地区为 WGS-84
 const olc2gcj = (olc, lat, lon, gcj = true) => {
     let fullOLC = recoverOLC(olc, lat, lon, gcj);
     let coord = new OpenLocationCode().decode(fullOLC);
