@@ -1,0 +1,12 @@
+{
+    "name": "maptool",
+    "version": "0.0.1",
+    "description": "随便乱写的地图工具",
+    "dependencies": {
+        "prcoords": "^1.0.1",
+        "open-location-code": "^1.0.3"
+    },
+    "engines": {
+        "node": ">=10.0.0"
+    }
+}
