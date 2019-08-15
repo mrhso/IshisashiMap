@@ -77,7 +77,7 @@ const amapConvert = (lat, lon, coordsys, key, callback) => {
         res.on('end', () => {
             let chunk = JSON.parse(Buffer.concat(chunks).toString());
             if (chunk.locations) {
-                callback({ lat: chunk.locations.split[0], lon: chunk.locations.split[1] });
+                callback({ lat: Number(chunk.locations.split[0]), lon: Number(chunk.locations.split[1]) });
             };
         });
     });
@@ -89,4 +89,5 @@ module.exports = {
     olc2gcj,
     olc2wgs,
     baiduGeoconv,
+    amapConvert,
 };
