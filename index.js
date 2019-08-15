@@ -1,4 +1,6 @@
-﻿const { distance, wgs_gcj, gcj_wgs, gcj_bd, bd_gcj, wgs_bd, bd_wgs, gcj_wgs_bored, bd_gcj_bored, bd_wgs_bored } = require('prcoords');
+﻿use strict;
+
+const { distance, wgs_gcj, gcj_wgs, gcj_bd, bd_gcj, wgs_bd, bd_wgs, gcj_wgs_bored, bd_gcj_bored, bd_wgs_bored } = require('prcoords');
 const { OpenLocationCode } = require('open-location-code');
 const { isInBaidu, isInGoogle } = require('./insane_is_in_china.js');
 
@@ -41,4 +43,11 @@ const olc2gcj = (olc, lat, lon, gcj = true) => {
 const olc2wgs = (olc, lat, lon, wgs = true) => {
     let gcj = olc2gcj(olc, lat, lon, !wgs);
     return isInGoogle(gcj.lat, gcj.lon) ? gcj_wgs_bored(gcj) : gcj;
+};
+
+module.exports = {
+    deltaTest,
+    recoverOLC,
+    olc2gcj,
+    olc2wgs,
 };
