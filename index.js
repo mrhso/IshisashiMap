@@ -2,7 +2,7 @@
 
 const { distance, wgs_gcj, gcj_wgs, gcj_bd, bd_gcj, wgs_bd, bd_wgs, gcj_wgs_bored, bd_gcj_bored, bd_wgs_bored } = require('prcoords');
 const { OpenLocationCode } = require('open-location-code');
-const { isInBaidu, isInGoogle } = require('./insane_is_in_china.js');
+const { isInGoogle } = require('./insane_is_in_china.js');
 
 // 坐标转换精度测试
 // 每个 Array 中 [0] 表示转换后的纬度，[1] 表示转换后的经度，[2] 表示转换前后的距离（米），[3] 表示来回转换与原坐标的距离（米）
