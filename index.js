@@ -3,6 +3,7 @@
 const { distance, wgs_gcj, gcj_wgs, gcj_bd, bd_gcj, wgs_bd, bd_wgs, gcj_wgs_bored, bd_gcj_bored, bd_wgs_bored } = require('prcoords');
 const { OpenLocationCode } = require('open-location-code');
 const { isInGoogle } = require('./insane_is_in_china.js');
+const https = require('https');
 
 // 坐标转换精度测试
 // 每个 Array 中 [0] 表示转换后的纬度，[1] 表示转换后的经度，[2] 表示转换前后的距离（米），[3] 表示来回转换与原坐标的距离（米）
@@ -48,9 +49,26 @@ const olc2wgs = (olc, lat, lon, wgs = true) => {
     return isInGoogle(gcj.lat, gcj.lon) ? gcj_wgs_bored(gcj) : gcj;
 };
 
+// 百度地图坐标转换 API
+const baiduGeoconv = (lat, lon, from, to, ak, callback) => {
+    https.get(new URL('https://api.map.baidu.com/geoconv/v1/?coords=${lon},${lat}&from=${from}&to=${to}&ak=${ak}'), (res) => {
+        let chunks = [];
+        res.on('data', (chunk) => {
+            chunks.push(chunk);
+        });
+        res.on('end', () => {
+            let chunk = JSON.parse(Buffer.concat(chunks).toString());
+            if (chunk.result) {
+                callback({ lat: chunk.result[0].y, lon: chunk.result[0].x });
+            };
+        });
+    });
+};
+
 module.exports = {
     deltaTest,
     recoverOLC,
     olc2gcj,
     olc2wgs,
+    baiduGeoconv,
 };
