@@ -26,6 +26,7 @@ const deltaTest = (lat, lon, bored = true) => {
 
 // 短 OLC 还原
 // 当中 gcj 为 true 则认为输入的临近坐标为 GCJ-02，否则为 WGS-84
+// 若输入为 WGS-84，只有坐标位于中国才转为 GCJ-02
 const recoverOLC = (olc, lat, lon, gcj = true) => {
     let near = !gcj && isInGoogle(lat, lon) ? wgs_gcj({ lat: lat, lon: lon }, false) : { lat: lat, lon: lon };
     return new OpenLocationCode().recoverNearest(olc, near.lat, near.lon);
@@ -40,6 +41,7 @@ const olc2gcj = (olc, lat, lon, gcj = true) => {
 
 // OLC 转 WGS-84
 // 当中 wgs 为 true 则认为输入的临近坐标为 WGS-84，否则为 GCJ-02
+// 只有坐标位于中国才转换
 const olc2wgs = (olc, lat, lon, wgs = true) => {
     let gcj = olc2gcj(olc, lat, lon, !wgs);
     return isInGoogle(gcj.lat, gcj.lon) ? gcj_wgs_bored(gcj) : gcj;
