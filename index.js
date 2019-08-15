@@ -1,4 +1,4 @@
-﻿use strict;
+'﻿use strict';
 
 const { distance, wgs_gcj, gcj_wgs, gcj_bd, bd_gcj, wgs_bd, bd_wgs, gcj_wgs_bored, bd_gcj_bored, bd_wgs_bored } = require('prcoords');
 const { OpenLocationCode } = require('open-location-code');
