@@ -50,8 +50,9 @@ const olc2wgs = (olc, lat, lon, wgs = true) => {
 };
 
 // 百度地图坐标转换 API
+// 用于测试 PRCoords 的算法，不建议直接使用
 const baiduGeoconv = (lat, lon, from, to, ak, callback) => {
-    https.get(new URL('https://api.map.baidu.com/geoconv/v1/?coords=${lon},${lat}&from=${from}&to=${to}&ak=${ak}'), (res) => {
+    https.get(new URL(`https://api.map.baidu.com/geoconv/v1/?coords=${lon},${lat}&from=${from}&to=${to}&ak=${ak}`), (res) => {
         let chunks = [];
         res.on('data', (chunk) => {
             chunks.push(chunk);
