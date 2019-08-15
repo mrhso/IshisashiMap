@@ -66,6 +66,23 @@ const baiduGeoconv = (lat, lon, from, to, ak, callback) => {
     });
 };
 
+// 高德地图坐标转换 API
+// 用于测试 PRCoords 的算法，不建议直接使用
+const amapConvert = (lat, lon, coordsys, key, callback) => {
+    https.get(new URL(`https://restapi.amap.com/v3/assistant/coordinate/convert?locations=${lon},${lat}&coordsys=${coordsys}&key=${key}`), (res) => {
+        let chunks = [];
+        res.on('data', (chunk) => {
+            chunks.push(chunk);
+        });
+        res.on('end', () => {
+            let chunk = JSON.parse(Buffer.concat(chunks).toString());
+            if (chunk.locations) {
+                callback({ lat: chunk.locations.split[0], lon: chunk.locations.split[1] });
+            };
+        });
+    });
+};
+
 module.exports = {
     deltaTest,
     recoverOLC,
