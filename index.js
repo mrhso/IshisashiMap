@@ -56,8 +56,8 @@ const deltaTest = (coord, bored = true) => {
 };
 
 // OLC 转坐标
-const olc2coord = (olc, coord) => {
-    let fullOLC = new OpenLocationCode().recoverNearest(olc, coord.lat, coord.lon);
+const olc2coord = (olc, near) => {
+    let fullOLC = new OpenLocationCode().recoverNearest(olc, near.lat, near.lon);
     let coord = new OpenLocationCode().decode(fullOLC);
     return { lat: coord.latitudeCenter, lon: coord.longitudeCenter };
 };
