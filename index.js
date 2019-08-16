@@ -8,12 +8,11 @@ const https = require('https');
 // 坐标转换精度测试
 // 每个 Array 中 [0] 表示转换后的纬度，[1] 表示转换后的经度，[2] 表示转换前后的距离（米），[3] 表示来回转换与原坐标的距离（米）
 // 其中 [3] 可以反映精度
-const deltaTest = (lat, lon, bored = true) => {
-    let input = { lat: lat, lon: lon };
+const deltaTest = (coord, bored = true) => {
     const handle = (fwd, rev) => {
-        let result_fwd = fwd(input, false);
+        let result_fwd = fwd(coord, false);
         let result_rev = rev(result_fwd, false);
-        return [result_fwd.lat, result_fwd.lon, distance(input, result_fwd), distance(input, result_rev)];
+        return [result_fwd.lat, result_fwd.lon, distance(coord, result_fwd), distance(coord, result_rev)];
     };
     return {
         wgs_gcj: handle(wgs_gcj, bored ? gcj_wgs_bored : gcj_wgs),
@@ -25,34 +24,17 @@ const deltaTest = (lat, lon, bored = true) => {
     };
 };
 
-// 短 OLC 还原
-// 当中 gcj 为 true 则认为输入的临近坐标为 GCJ-02，否则为 WGS-84
-// 若输入为 WGS-84，只有坐标位于中国才转为 GCJ-02
-const recoverOLC = (olc, lat, lon, gcj = true) => {
-    let near = !gcj && isInGoogle(lat, lon) ? wgs_gcj({ lat: lat, lon: lon }, false) : { lat: lat, lon: lon };
-    return new OpenLocationCode().recoverNearest(olc, near.lat, near.lon);
-};
-
-// OLC 转 GCJ-02
-// 中国以外地区为 WGS-84
-const olc2gcj = (olc, lat, lon, gcj = true) => {
-    let fullOLC = recoverOLC(olc, lat, lon, gcj);
+// OLC 转坐标
+const olc2coord = (olc, coord) => {
+    let fullOLC = new OpenLocationCode().recoverNearest(olc, coord.lat, coord.lon);
     let coord = new OpenLocationCode().decode(fullOLC);
     return { lat: coord.latitudeCenter, lon: coord.longitudeCenter };
 };
 
-// OLC 转 WGS-84
-// 当中 wgs 为 true 则认为输入的临近坐标为 WGS-84，否则为 GCJ-02
-// 只有坐标位于中国才转换
-const olc2wgs = (olc, lat, lon, wgs = true) => {
-    let gcj = olc2gcj(olc, lat, lon, !wgs);
-    return isInGoogle(gcj.lat, gcj.lon) ? gcj_wgs_bored(gcj) : gcj;
-};
-
 // 百度地图坐标转换 API
 // 用于测试 PRCoords 的算法，不建议直接使用
-const baiduGeoconv = (lat, lon, from, to, ak, callback) => {
-    https.get(new URL(`https://api.map.baidu.com/geoconv/v1/?coords=${lon},${lat}&from=${from}&to=${to}&ak=${ak}`), (res) => {
+const baiduGeoconv = (coord, from, to, ak, callback) => {
+    https.get(new URL(`https://api.map.baidu.com/geoconv/v1/?coords=${coord.lon},${coord.lat}&from=${from}&to=${to}&ak=${ak}`), (res) => {
         let chunks = [];
         res.on('data', (chunk) => {
             chunks.push(chunk);
@@ -68,8 +50,8 @@ const baiduGeoconv = (lat, lon, from, to, ak, callback) => {
 
 // 高德地图坐标转换 API
 // 用于测试 PRCoords 的算法，不建议直接使用
-const amapConvert = (lat, lon, coordsys, key, callback) => {
-    https.get(new URL(`https://restapi.amap.com/v3/assistant/coordinate/convert?locations=${lon},${lat}&coordsys=${coordsys}&key=${key}`), (res) => {
+const amapConvert = (coord, coordsys, key, callback) => {
+    https.get(new URL(`https://restapi.amap.com/v3/assistant/coordinate/convert?locations=${coord.lon},${coord.lat}&coordsys=${coordsys}&key=${key}`), (res) => {
         let chunks = [];
         res.on('data', (chunk) => {
             chunks.push(chunk);
@@ -83,11 +65,20 @@ const amapConvert = (lat, lon, coordsys, key, callback) => {
     });
 };
 
+// 自动判断中国地区来灵活转换
+// 输入函数应为 PRCoords 的函数
+const autoConv = (func, coord) => {
+    if (isInGoogle(coord)) {
+        return func(coord, false);
+    } else {
+        return coord;
+    };
+};
+
 module.exports = {
     deltaTest,
-    recoverOLC,
-    olc2gcj,
-    olc2wgs,
+    olc2coord,
     baiduGeoconv,
     amapConvert,
+    autoConv,
 };
