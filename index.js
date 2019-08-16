@@ -1,9 +1,40 @@
 '﻿use strict';
 
-const { distance, wgs_gcj, gcj_wgs, gcj_bd, bd_gcj, wgs_bd, bd_wgs, gcj_wgs_bored, bd_gcj_bored, bd_wgs_bored } = require('prcoords');
+const prcoords = require('prcoords');
 const { OpenLocationCode } = require('open-location-code');
 const { isInGoogle } = require('./insane_is_in_china.js');
 const https = require('https');
+
+const wgs_gcj = (wgs, checkChina = true) => {
+    if (checkChina && !isInGoogle(wgs)) {
+        return wgs;
+    } else {
+        return prcoords.wgs_gcj(wgs, false);
+    };
+};
+
+const gcj_wgs = (gcj, checkChina = true) => {
+    if (checkChina && !isInGoogle(gcj)) {
+        return gcj;
+    } else {
+        return prcoords.gcj_wgs(gcj, false);
+    };
+};
+
+const gcj_bd = prcoords.gcj_bd;
+const bd_gcj = prcoords.bd_gcj;
+
+const wgs_bd = (bd, checkChina = true) => {
+    return gcj_bd(wgs_gcj(bd, checkChina));
+};
+
+const bd_wgs = (bd, checkChina = true) => {
+    return gcj_wgs(bd_gcj(bd), checkChina);
+};
+
+const gcj_wgs_bored = prcoords.__bored__(wgs_gcj, gcj_wgs);
+const bd_gcj_bored = prcoords.__bored__(gcj_bd, bd_gcj);
+const bd_wgs_bored = prcoords.__bored__(wgs_bd, bd_wgs);
 
 // 坐标转换精度测试
 // 每个 Array 中 [0] 表示转换后的纬度，[1] 表示转换后的经度，[2] 表示转换前后的距离（米），[3] 表示来回转换与原坐标的距离（米）
@@ -12,7 +43,7 @@ const deltaTest = (coord, bored = true) => {
     const handle = (fwd, rev) => {
         let result_fwd = fwd(coord, false);
         let result_rev = rev(result_fwd, false);
-        return [result_fwd.lat, result_fwd.lon, distance(coord, result_fwd), distance(coord, result_rev)];
+        return [result_fwd.lat, result_fwd.lon, prcoords.distance(coord, result_fwd), prcoords.distance(coord, result_rev)];
     };
     return {
         wgs_gcj: handle(wgs_gcj, bored ? gcj_wgs_bored : gcj_wgs),
@@ -65,20 +96,18 @@ const amapConvert = (coord, coordsys, key, callback) => {
     });
 };
 
-// 自动判断中国地区来灵活转换
-// 输入函数应为 PRCoords 的函数
-const autoConv = (func, coord) => {
-    if (isInGoogle(coord)) {
-        return func(coord, false);
-    } else {
-        return coord;
-    };
-};
-
 module.exports = {
+    wgs_gcj,
+    gcj_wgs,
+    gcj_bd,
+    bd_gcj,
+    wgs_bd,
+    bd_wgs,
+    gcj_wgs_bored,
+    bd_gcj_bored,
+    bd_wgs_bored,
     deltaTest,
     olc2coord,
     baiduGeoconv,
     amapConvert,
-    autoConv,
 };
