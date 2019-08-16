@@ -6,7 +6,7 @@ const { isInGoogle } = require('./insane_is_in_china.js');
 const https = require('https');
 
 const wgs_gcj = (wgs, checkChina = true) => {
-    if (checkChina && !isInGoogle(wgs)) {
+    if (checkChina && !isInGoogle(wgs.lat, wgs.lon)) {
         return wgs;
     } else {
         return prcoords.wgs_gcj(wgs, false);
@@ -14,7 +14,7 @@ const wgs_gcj = (wgs, checkChina = true) => {
 };
 
 const gcj_wgs = (gcj, checkChina = true) => {
-    if (checkChina && !isInGoogle(gcj)) {
+    if (checkChina && !isInGoogle(gcj.lat, gcj.lon)) {
         return gcj;
     } else {
         return prcoords.gcj_wgs(gcj, false);
