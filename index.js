@@ -96,6 +96,9 @@ const amapConvert = (coord, coordsys, key, callback) => {
     });
 };
 
+const lonlat2webmct = (coord) => ({ x: (Math.PI / 180) * 6378137 * coord.lon, y: 6378137 * Math.log(Math.tan(Math.PI/4 + (Math.PI / 180) * coord.lat / 2)) });
+const webmct2lonlat = (coord) => ({ lat: (180 / Math.PI) * 2 * Math.atan(exp(y / 6378137)) - 90, lon: (180 / Math.PI) * x / 6378137 });
+
 module.exports = {
     wgs_gcj,
     gcj_wgs,
@@ -110,4 +113,6 @@ module.exports = {
     olc2coord,
     baiduGeoconv,
     amapConvert,
+    lonlat2webmct,
+    webmct2lonlat,
 };
