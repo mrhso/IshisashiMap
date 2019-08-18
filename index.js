@@ -51,6 +51,16 @@ const __bored__ = (fwd, rev) => {
             return curr;
         } else {
             // TODO
+            let curr = rev({ lat: heck.lat, lon: 180 }, checkChina);
+            let diff = { lat: Infinity, lon: Infinity };
+
+            let i = 0;
+            while (Math.max(Math.abs(diff.lat), Math.abs(diff.lon)) > PRC_EPS && i++ < 10) {
+                diff = _coord_diff(fwd(curr, checkChina), heck);
+                curr = _coord_diff(curr, diff);
+            };
+
+            return curr;
         };
     };
 };
