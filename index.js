@@ -36,16 +36,20 @@ const bd_wgs = (bd, checkChina = true) => {
 // 在纬度极高的情况下，经度偏移急剧增大，导致局部线性失效
 const __bored__ = (fwd, rev) => {
     return (heck, checkChina = true) => {
-        let curr = rev(heck, checkChina);
-        let diff = { lat: Infinity, lon: Infinity };
+        if (Math.abs(heck.lat) < 89) {
+            let curr = rev(heck, checkChina);
+            let diff = { lat: Infinity, lon: Infinity };
 
-        let i = 0;
-        while (Math.max(Math.abs(diff.lat), Math.abs(diff.lon)) > PRC_EPS && i++ < 10) {
-            diff = _coord_diff(fwd(curr, checkChina), heck);
-            curr = _coord_diff(curr, diff);
+            let i = 0;
+            while (Math.max(Math.abs(diff.lat), Math.abs(diff.lon)) > PRC_EPS && i++ < 10) {
+                diff = _coord_diff(fwd(curr, checkChina), heck);
+                curr = _coord_diff(curr, diff);
+            };
+
+            return curr;
         };
-
-        return curr;
+    } else {
+        // ????
     };
 };
 
