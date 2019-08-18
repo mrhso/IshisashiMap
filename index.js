@@ -35,6 +35,7 @@ const bd_wgs = (bd, checkChina = true) => {
 // TODO 极端情况
 // 在纬度极高的情况下，经度偏移急剧增大，导致局部线性失效
 const __bored__ = (fwd, rev) => {
+    const PRC_EPS = 1e-5;
     return (heck, checkChina = true) => {
         if (Math.abs(heck.lat) < 89) {
             let curr = rev(heck, checkChina);
@@ -49,7 +50,9 @@ const __bored__ = (fwd, rev) => {
             return curr;
         };
     } else {
-        // ????
+        // 纬度应该会很接近？
+        let curr = { lat: heck.lat, lon: undefined };
+        return curr;
     };
 };
 
