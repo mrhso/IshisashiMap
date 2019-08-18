@@ -57,15 +57,18 @@ const __bored__ = (fwd, rev) => {
             let maxLon = 180;
             let minLon = -180;
 
-            while (Math.abs(deltaLon) > PRC_EPS) {
+            let i = 0;
+            while (Math.abs(deltaLon) > PRC_EPS && i++ < 10) {
                 curr.lon = (maxLon + minLon) / 2;
                 prevDeltaLon = deltaLon;
                 deltaLon = _coord_diff(fwd(curr, checkChina), heck).lon;
-                if ((deltaLon - prevDeltaLon) > 0) {
+                if (deltaLon > prevDeltaLon) {
                     maxLon = curr.lon;
                 } else {
                     minLon = curr.lon;
                 };
+                console.log(curr);
+                console.log(deltaLon);
             };
 
             return curr;
