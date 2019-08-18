@@ -33,7 +33,7 @@ const bd_wgs = (bd, checkChina = true) => {
 };
 
 // TODO 极端情况
-// 在纬度极高的情况下，经度偏移急剧增大，导致局部线性失效
+// 在纬度极高的情况下，经度偏移趋向于无穷大，导致局部线性失效
 const __bored__ = (fwd, rev) => {
     const PRC_EPS = 1e-5;
     const _coord_diff = (a, b) => ({ lat: a.lat - b.lat, lon: a.lon - b.lon });
@@ -50,28 +50,7 @@ const __bored__ = (fwd, rev) => {
 
             return curr;
         } else {
-            // 纬度应该会很接近？
-            let curr = { lat: heck.lat, lon: undefined };
-            let deltaLon = Infinity;
-            let prevDeltaLon = Infinity;
-            let maxLon = 180;
-            let minLon = -180;
-
-            let i = 0;
-            while (Math.abs(deltaLon) > PRC_EPS && i++ < 10) {
-                curr.lon = (maxLon + minLon) / 2;
-                prevDeltaLon = deltaLon;
-                deltaLon = _coord_diff(fwd(curr, checkChina), heck).lon;
-                if (deltaLon > prevDeltaLon) {
-                    maxLon = curr.lon;
-                } else {
-                    minLon = curr.lon;
-                };
-                console.log(curr);
-                console.log(deltaLon);
-            };
-
-            return curr;
+            // TODO
         };
     };
 };
