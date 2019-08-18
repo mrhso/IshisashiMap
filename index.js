@@ -106,7 +106,6 @@ module.exports = {
     bd_gcj,
     wgs_bd,
     bd_wgs,
-    __bored__,
     gcj_wgs_bored,
     bd_gcj_bored,
     bd_wgs_bored,
