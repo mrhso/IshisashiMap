@@ -32,42 +32,9 @@ const bd_wgs = (bd, checkChina = true) => {
     return gcj_wgs(bd_gcj(bd), checkChina);
 };
 
-// TODO 极端情况
-// 在纬度极高的情况下，经度偏移趋向于无穷大，导致局部线性失效
-const __bored__ = (fwd, rev) => {
-    const PRC_EPS = 1e-5;
-    const _coord_diff = (a, b) => ({ lat: a.lat - b.lat, lon: a.lon - b.lon });
-    return (heck, checkChina = true) => {
-        if (Math.abs(heck.lat) < 89) {
-            let curr = rev(heck, checkChina);
-            let diff = { lat: Infinity, lon: Infinity };
-
-            let i = 0;
-            while (Math.max(Math.abs(diff.lat), Math.abs(diff.lon)) > PRC_EPS && i++ < 10) {
-                diff = _coord_diff(fwd(curr, checkChina), heck);
-                curr = _coord_diff(curr, diff);
-            };
-
-            return curr;
-        } else {
-            // TODO
-            let curr = rev({ lat: heck.lat, lon: 180 }, checkChina);
-            let diff = { lat: Infinity, lon: Infinity };
-
-            let i = 0;
-            while (Math.max(Math.abs(diff.lat), Math.abs(diff.lon)) > PRC_EPS && i++ < 10) {
-                diff = _coord_diff(fwd(curr, checkChina), heck);
-                curr = _coord_diff(curr, diff);
-            };
-
-            return curr;
-        };
-    };
-};
-
-const gcj_wgs_bored = __bored__(wgs_gcj, gcj_wgs);
-const bd_gcj_bored = __bored__(gcj_bd, bd_gcj);
-const bd_wgs_bored = __bored__(wgs_bd, bd_wgs);
+const gcj_wgs_bored = prcoords.__bored__(wgs_gcj, gcj_wgs);
+const bd_gcj_bored = prcoords.__bored__(gcj_bd, bd_gcj);
+const bd_wgs_bored = prcoords.__bored__(wgs_bd, bd_wgs);
 
 // 坐标转换精度测试
 // 每个 Array 中 [0] 表示转换后的纬度，[1] 表示转换后的经度，[2] 表示转换前后的距离（米），[3] 表示来回转换与原坐标的距离（米）
