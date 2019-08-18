@@ -53,13 +53,15 @@ const __bored__ = (fwd, rev) => {
             // 纬度应该会很接近？
             let curr = { lat: heck.lat, lon: undefined };
             let deltaLon = Infinity;
+            let prevDeltaLon = Infinity;
             let maxLon = 180;
             let minLon = -180;
 
             while (Math.abs(deltaLon) > PRC_EPS) {
                 curr.lon = (maxLon + minLon) / 2;
+                prevDeltaLon = deltaLon;
                 deltaLon = _coord_diff(fwd(curr, checkChina), heck).lon;
-                if (deltaLon > 0) {
+                if ((deltaLon - prevDeltaLon) > 0) {
                     maxLon = curr.lon;
                 } else {
                     minLon = curr.lon;
