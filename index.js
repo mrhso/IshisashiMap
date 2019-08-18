@@ -33,6 +33,7 @@ const bd_wgs = (bd, checkChina = true) => {
 };
 
 // TODO 极端情况
+// 在纬度极高的情况下，经度偏移急剧增大，导致局部线性失效
 const __bored__ = (fwd, rev) => {
     return (heck, checkChina = true) => {
         let curr = rev(heck, checkChina);
