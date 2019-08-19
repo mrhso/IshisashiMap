@@ -16,11 +16,10 @@ const wgs_bd = (bd, checkChina = true) => gcj_bd(wgs_gcj(bd, checkChina));
 const bd_wgs = (bd, checkChina = true) => gcj_wgs(bd_gcj(bd), checkChina);
 
 const __bored__ = (fwd, rev) => {
-    const PRC_EPS = 1e-5;
     const _coord_diff = (a, b) => ({ lat: a.lat - b.lat, lon: a.lon - b.lon });
 
-    // maxTimes 表示最大迭代次数
-    return (heck, checkChina = true, maxTimes = 10) => {
+    // eps 表示所求精度，maxTimes 表示最大迭代次数
+    return (heck, checkChina = true, eps = 1e-5, maxTimes = 10) => {
         let curr = rev(heck, checkChina);
         let diff = { lat: Infinity, lon: Infinity };
 
@@ -42,10 +41,10 @@ const bd_wgs_bored = __bored__(wgs_bd, bd_wgs);
 // 坐标转换精度测试
 // 每个 Array 中 [0] 表示转换后的纬度，[1] 表示转换后的经度，[2] 表示转换前后的距离（米），[3] 表示来回转换与原坐标的距离（米）
 // 其中 [3] 可以反映精度
-const deltaTest = (coord, bored = true, maxTimes = 10) => {
+const deltaTest = (coord, bored = true, eps=1e-5, maxTimes = 10) => {
     const handle = (fwd, rev) => {
-        let result_fwd = fwd(coord, false, maxTimes);
-        let result_rev = rev(result_fwd, false, maxTimes);
+        let result_fwd = fwd(coord, false, eps, maxTimes);
+        let result_rev = rev(result_fwd, false, eps, maxTimes);
         return [result_fwd.lat, result_fwd.lon, prcoords.distance(coord, result_fwd), prcoords.distance(coord, result_rev)];
     };
     return {
