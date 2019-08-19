@@ -25,7 +25,7 @@ const __bored__ = (fwd, rev) => {
 
         // Wait till we hit fixed point or get bored
         let i = 0;
-        while (Math.max(Math.abs(diff.lat), Math.abs(diff.lon)) > PRC_EPS && i++ < maxTimes) {
+        while (Math.max(Math.abs(diff.lat), Math.abs(diff.lon)) > eps && i++ < maxTimes) {
             diff = _coord_diff(fwd(curr, checkChina), heck);
             curr = _coord_diff(curr, diff);
         };
