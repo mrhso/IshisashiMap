@@ -102,7 +102,9 @@ let expts = {
 
 if (typeof module === 'object' && module.exports) {
     module.exports = expts;
-} else if (typeof window !== 'undefined') {
+}
+
+if (typeof window !== 'undefined') {
     window.IshisashiMap = expts;
 };
 })();
