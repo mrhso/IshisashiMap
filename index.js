@@ -24,13 +24,8 @@ const gcj_wgs = (gcj, checkChina = true) => {
 const gcj_bd = prcoords.gcj_bd;
 const bd_gcj = prcoords.bd_gcj;
 
-const wgs_bd = (bd, checkChina = true) => {
-    return gcj_bd(wgs_gcj(bd, checkChina));
-};
-
-const bd_wgs = (bd, checkChina = true) => {
-    return gcj_wgs(bd_gcj(bd), checkChina);
-};
+const wgs_bd = (bd, checkChina = true) => gcj_bd(wgs_gcj(bd, checkChina));
+const bd_wgs = (bd, checkChina = true) => gcj_wgs(bd_gcj(bd), checkChina);
 
 const gcj_wgs_bored = prcoords.__bored__(wgs_gcj, gcj_wgs);
 const bd_gcj_bored = prcoords.__bored__(gcj_bd, bd_gcj);
