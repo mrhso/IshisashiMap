@@ -44,8 +44,8 @@ const bd_wgs_bored = prcoords.__bored__(wgs_bd, bd_wgs);
 // 其中 [3] 可以反映精度
 const deltaTest = (coord, bored = true, maxTimes = 10) => {
     const handle = (fwd, rev) => {
-        let result_fwd = fwd(coord, false);
-        let result_rev = rev(result_fwd, false);
+        let result_fwd = fwd(coord, false, maxTimes);
+        let result_rev = rev(result_fwd, false, maxTimes);
         return [result_fwd.lat, result_fwd.lon, prcoords.distance(coord, result_fwd), prcoords.distance(coord, result_rev)];
     };
     return {
