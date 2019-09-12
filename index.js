@@ -1,4 +1,4 @@
-'﻿use strict';
+'use strict';
 
 const prcoords = require('prcoords');
 const { OpenLocationCode } = require('open-location-code');
