@@ -1,4 +1,3 @@
-(() => {
 '﻿use strict';
 
 const prcoords = require('prcoords');
@@ -101,7 +100,7 @@ const amapConvert = (coord, coordsys, key, callback) => {
 const lonlat2webmct = (coord) => ({ x: (Math.PI / 180) * 6378137 * coord.lon, y: 6378137 * Math.log(Math.tan(Math.PI / 4 + (Math.PI / 180) * coord.lat / 2)) });
 const webmct2lonlat = (coord) => ({ lat: (180 / Math.PI) * 2 * Math.atan(Math.exp(coord.y / 6378137)) - 90, lon: (180 / Math.PI) * coord.x / 6378137 });
 
-let expts = {
+module.exports = {
     wgs_gcj,
     gcj_wgs,
     gcj_bd,
@@ -119,12 +118,3 @@ let expts = {
     lonlat2webmct,
     webmct2lonlat,
 };
-
-if (typeof module === 'object' && module.exports) {
-    module.exports = expts;
-}
-
-if (typeof window !== 'undefined') {
-    window.IshisashiMap = expts;
-};
-})();
