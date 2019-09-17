@@ -21,15 +21,22 @@ const __bored__ = (fwd, rev) => {
     return (heck, checkChina = true, eps = 1e-5, maxTimes = 10) => {
         let curr = rev(heck, checkChina);
         let diff = { lat: Infinity, lon: Infinity };
+        let minDiffCurr = curr;
+        let minDiff = diff;
 
         // Wait till we hit fixed point or get bored
         let i = 0;
         while (Math.max(Math.abs(diff.lat), Math.abs(diff.lon)) > eps && i++ < maxTimes) {
             diff = _coord_diff(fwd(curr, checkChina), heck);
             curr = _coord_diff(curr, diff);
+            // 有时运气不好会卡在高频的阴沟里，所以选择误差最小的那个吧
+            if (Math.max(Math.abs(diff.lat), Math.abs(diff.lon)) < Math.max(Math.abs(minDiff.lat), Math.abs(minDiff.lon))) {
+                minDiff = diff;
+                minDiffCurr = curr;
+            };
         };
 
-        return curr;
+        return minDiffCurr;
     };
 };
 
