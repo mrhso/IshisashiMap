@@ -18,7 +18,7 @@ const __bored__ = (fwd, rev) => {
     const _coord_diff = (a, b) => ({ lat: a.lat - b.lat, lon: a.lon - b.lon });
 
     // eps 表示所求精度，maxTimes 表示最大迭代次数
-    return (heck, checkChina = true, eps = 1e-5, maxTimes = 10) => {
+    return (heck, checkChina = true, eps = Number.EPSILON, maxTimes = 15) => {
         let curr = rev(heck, checkChina);
         let diff = { lat: Infinity, lon: Infinity };
         let minDiffCurr = curr;
