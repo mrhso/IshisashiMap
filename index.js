@@ -47,7 +47,7 @@ const bd_wgs_bored = __bored__(wgs_bd, bd_wgs);
 // 坐标转换精度测试
 // 每个 Array 中 [0] 表示转换后的纬度，[1] 表示转换后的经度，[2] 表示转换前后的距离（米），[3] 表示来回转换与原坐标的距离（米）
 // 其中 [3] 可以反映精度
-const deltaTest = (coord, bored = true, eps = 1e-5, maxTimes = 10) => {
+const deltaTest = (coord, bored = true, eps = Number.EPSILON, maxTimes = 15) => {
     const handle = (fwd, rev) => {
         let result_fwd = fwd(coord, false, eps, maxTimes);
         let result_rev = rev(result_fwd, false, eps, maxTimes);
