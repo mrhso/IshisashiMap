@@ -14,6 +14,9 @@ const bd_gcj = prcoords.bd_gcj;
 const wgs_bd = (bd, checkChina = true) => gcj_bd(wgs_gcj(bd, checkChina));
 const bd_wgs = (bd, checkChina = true) => gcj_wgs(bd_gcj(bd), checkChina);
 
+const round = (num, pow = 0) => Math.sign(num) * Math.round(Math.abs(num) * Number('1e' + pow)) / Number('1e' + pow);
+const coordRound = (coord, pow = 0) => ({ lon: round(coord.lon, pow), lat: round(coord.lat, pow) });
+
 const __bored__ = (fwd, rev) => {
     const _coord_diff = (a, b) => ({ lat: a.lat - b.lat, lon: a.lon - b.lon });
 
@@ -108,6 +111,7 @@ const lonlat2webmct = (coord) => ({ x: (Math.PI / 180) * 6378137 * coord.lon, y:
 const webmct2lonlat = (coord) => ({ lat: (180 / Math.PI) * 2 * Math.atan(Math.exp(coord.y / 6378137)) - 90, lon: (180 / Math.PI) * coord.x / 6378137 });
 
 module.exports = {
+    coordRound,
     wgs_gcj,
     gcj_wgs,
     gcj_bd,
