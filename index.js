@@ -54,9 +54,10 @@ const deltaTest = (coord, bored = true, eps = Number.EPSILON, maxTimes = 15) => 
     const handle = (fwd, rev) => {
         let result_fwd = fwd(coord, false, eps, maxTimes);
         let result_rev = rev(result_fwd, false, eps, maxTimes);
-        return [result_fwd.lat, result_fwd.lon, prcoords.distance(coord, result_fwd), prcoords.distance(coord, result_rev)];
+        return [result_fwd, result_rev, prcoords.distance(coord, result_fwd), prcoords.distance(coord, result_rev)];
     };
     return {
+        raw: [coord, coord, 0, 0],
         wgs_gcj: handle(wgs_gcj, bored ? gcj_wgs_bored : gcj_wgs),
         wgs_bd: handle(wgs_bd, bored ? bd_wgs_bored : bd_wgs),
         gcj_wgs: handle(bored ? gcj_wgs_bored : gcj_wgs, wgs_gcj),
