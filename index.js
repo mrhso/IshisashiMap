@@ -14,7 +14,7 @@ const bd_gcj = prcoords.bd_gcj;
 const wgs_bd = (bd, checkChina = true) => gcj_bd(wgs_gcj(bd, checkChina));
 const bd_wgs = (bd, checkChina = true) => gcj_wgs(bd_gcj(bd), checkChina);
 
-const round = (num, pow = 0) => Math.sign(num) * Math.round(Math.abs(num) * Number('1e' + pow)) / Number('1e' + pow);
+const round = (num, pow = 0) => Math.sign(num) * Math.round(Math.abs(num) * Number(`1e${pow}`)) / Number(`1e${pow}`);
 const coordRound = (coord, pow = 0) => ({ lon: round(coord.lon, pow), lat: round(coord.lat, pow) });
 
 const __bored__ = (fwd, rev) => {
