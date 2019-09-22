@@ -66,10 +66,10 @@ const __bored__ = (fwd, rev) => {
         while (i++ < digit) {
             curr = coordRound(pre, i);
             diff = _coord_diff(fwd(curr, checkChina), heck);
-            if (Math.max(Math.abs(diff.lat), Math.abs(diff.lon)) === Math.max(Math.abs(minDiff.lat), Math.abs(minDiff.lon)) && digit < minDigit || Math.max(Math.abs(diff.lat), Math.abs(diff.lon)) < Math.max(Math.abs(minDiff.lat), Math.abs(minDiff.lon))) {
+            if (Math.max(Math.abs(diff.lat), Math.abs(diff.lon)) === Math.max(Math.abs(minDiff.lat), Math.abs(minDiff.lon)) && i < minDigit || Math.max(Math.abs(diff.lat), Math.abs(diff.lon)) < Math.max(Math.abs(minDiff.lat), Math.abs(minDiff.lon))) {
                 minDiff = diff;
                 minDiffCurr = curr;
-                minDidigit = digit;
+                minDidigit = i;
             };
         };
 
