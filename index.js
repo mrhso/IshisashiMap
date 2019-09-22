@@ -5,6 +5,9 @@ const { OpenLocationCode } = require('open-location-code');
 const { isInGoogle } = require('./insane_is_in_china.js');
 const https = require('https');
 
+const round = (num, pow = 0) => Math.sign(num) * Math.round(Math.abs(num) * Number(`1e${pow}`)) / Number(`1e${pow}`);
+const coordRound = (coord, pow = 0) => ({ lat: round(coord.lat, pow), lon: round(coord.lon, pow) });
+
 const wgs_gcj = (wgs, checkChina = true) => checkChina && !isInGoogle(wgs.lat, wgs.lon) ? (console.warn(`Non-Chinese coords found, returning as-is: (${wgs.lat}, ${wgs.lon})`), wgs) : prcoords.wgs_gcj(wgs, false);
 const gcj_wgs = (gcj, checkChina = true) => checkChina && !isInGoogle(gcj.lat, gcj.lon) ? (console.warn(`Non-Chinese coords found, returning as-is: (${gcj.lat}, ${gcj.lon})`), gcj) : prcoords.gcj_wgs(gcj, false);
 
@@ -13,9 +16,6 @@ const bd_gcj = prcoords.bd_gcj;
 
 const wgs_bd = (bd, checkChina = true) => gcj_bd(wgs_gcj(bd, checkChina));
 const bd_wgs = (bd, checkChina = true) => gcj_wgs(bd_gcj(bd), checkChina);
-
-const round = (num, pow = 0) => Math.sign(num) * Math.round(Math.abs(num) * Number(`1e${pow}`)) / Number(`1e${pow}`);
-const coordRound = (coord, pow = 0) => ({ lat: round(coord.lat, pow), lon: round(coord.lon, pow) });
 
 const __bored__ = (fwd, rev) => {
     const _coord_diff = (a, b) => ({ lat: a.lat - b.lat, lon: a.lon - b.lon });
