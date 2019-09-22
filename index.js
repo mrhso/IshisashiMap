@@ -69,7 +69,7 @@ const __bored__ = (fwd, rev) => {
             if (Math.max(Math.abs(diff.lat), Math.abs(diff.lon)) === Math.max(Math.abs(minDiff.lat), Math.abs(minDiff.lon)) && i < minDigit || Math.max(Math.abs(diff.lat), Math.abs(diff.lon)) < Math.max(Math.abs(minDiff.lat), Math.abs(minDiff.lon))) {
                 minDiff = diff;
                 minDiffCurr = curr;
-                minDidigit = i;
+                minDigit = i;
             };
         };
 
