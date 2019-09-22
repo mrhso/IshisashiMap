@@ -39,6 +39,24 @@ const __bored__ = (fwd, rev) => {
             };
         };
 
+        // 通过舍入寻找更合理的解
+        const getDigit = (coord) => Math.max(Number(coord.lat.toExponential().split('e')[1]), Number(coord.lon.toExponential().split('e')[1]));
+        let pre = minDiffCurr;
+        diff = minDiff;
+        curr = minDiffCurr;
+        let digit = getDigit(pre);
+        let minDigit = digit;
+        i = 0;
+        while (Math.max(i++ < digit) {
+            curr = coordRound(pre, i);
+            diff = _coord_diff(fwd(curr, checkChina), heck);
+            if (Math.max(Math.abs(diff.lat), Math.abs(diff.lon)) === Math.max(Math.abs(minDiff.lat), Math.abs(minDiff.lon)) && digit < minDigit || Math.max(Math.abs(diff.lat), Math.abs(diff.lon)) < Math.max(Math.abs(minDiff.lat), Math.abs(minDiff.lon))) {
+                minDiff = diff;
+                minDiffCurr = curr;
+                minDidigit = digit;
+            };
+        };
+
         return minDiffCurr;
     };
 };
