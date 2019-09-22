@@ -40,11 +40,27 @@ const __bored__ = (fwd, rev) => {
         };
 
         // 通过舍入寻找更合理的解
-        const getDigit = (coord) => Math.max(Number(coord.lat.toExponential().split('e')[1]), Number(coord.lon.toExponential().split('e')[1]));
+        const getDigit = (num) => {
+            let str = num.toString();
+            let part = str.split('e');
+            if (part[1]) {
+                let pow = Number(part[1]);
+                if (pow < 0) {
+                    return -pow;
+                };
+            } else {
+                part = str.split('.');
+                if (part[1]) {
+                    return part[1].length;
+                };
+            };
+            return 0;
+        };
+        const coordDigit = (coord) => Math.max(getDigit(coord.lat), getDigit(coord.lon));
         let pre = minDiffCurr;
         diff = minDiff;
         curr = minDiffCurr;
-        let digit = getDigit(pre);
+        let digit = coordDigit(pre);
         let minDigit = digit;
         i = 0;
         while (i++ < digit) {
