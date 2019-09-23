@@ -5,8 +5,9 @@ const { OpenLocationCode } = require('open-location-code');
 const { isInGoogle } = require('./insane_is_in_china.js');
 const https = require('https');
 
-const round = (num, pow = 0) => Math.sign(num) * Math.round(Math.abs(num) * Number(`1e${pow}`)) / Number(`1e${pow}`);
-const coordRound = (coord, pow = 0) => ({ lat: round(coord.lat, pow), lon: round(coord.lon, pow) });
+const isNumber = (arg) => Object.prototype.toString.call(arg) === '[object Number]';
+const round = (num, pow) => isNumber(pow) ? Math.sign(num) * Math.round(Math.abs(num) * Number(`1e${pow}`)) / Number(`1e${pow}`) : num;
+const coordRound = (coord, pow) => ({ lat: round(coord.lat, pow), lon: round(coord.lon, pow) });
 
 const wgs_gcj = (wgs, checkChina = true) => checkChina && !isInGoogle(wgs.lat, wgs.lon) ? (console.warn(`Non-Chinese coords found, returning as-is: (${wgs.lat}, ${wgs.lon})`), wgs) : prcoords.wgs_gcj(wgs, false);
 const gcj_wgs = (gcj, checkChina = true) => checkChina && !isInGoogle(gcj.lat, gcj.lon) ? (console.warn(`Non-Chinese coords found, returning as-is: (${gcj.lat}, ${gcj.lon})`), gcj) : prcoords.gcj_wgs(gcj, false);
@@ -20,9 +21,10 @@ const bd_wgs = (bd, checkChina = true) => gcj_wgs(bd_gcj(bd), checkChina);
 const __bored__ = (fwd, rev) => {
     const _coord_diff = (a, b) => ({ lat: a.lat - b.lat, lon: a.lon - b.lon });
 
-    // eps 表示所求精度，maxTimes 表示最大迭代次数
-    return (heck, checkChina = true, eps = Number.EPSILON, maxTimes = 15) => {
-        let curr = rev(heck, checkChina);
+    // eps 表示所求精度，maxTimes 表示最大迭代次数，roundPow 表示迭代过程中坐标的精度
+    return (heck, checkChina = true, eps = Number.EPSILON, maxTimes = 15, roundPow) => {
+        heck = coordRound(heck, RoundPow);
+        let curr = coordRound(rev(heck, checkChina), roundPow);
         let diff = { lat: Infinity, lon: Infinity };
         let minDiffCurr = curr;
         let minDiff = diff;
@@ -30,7 +32,7 @@ const __bored__ = (fwd, rev) => {
         // Wait till we hit fixed point or get bored
         let i = 0;
         while (Math.max(Math.abs(diff.lat), Math.abs(diff.lon)) > eps && i++ < maxTimes) {
-            diff = _coord_diff(fwd(curr, checkChina), heck);
+            diff = _coord_diff(coordRound(fwd(curr, checkChina), roundPow), heck);
             curr = _coord_diff(curr, diff);
             // 有时运气不好会卡在高频的阴沟里，所以选择误差最小的那个吧
             if (Math.max(Math.abs(diff.lat), Math.abs(diff.lon)) < Math.max(Math.abs(minDiff.lat), Math.abs(minDiff.lon))) {
@@ -65,7 +67,7 @@ const __bored__ = (fwd, rev) => {
         i = 0;
         while (i++ < digit) {
             curr = coordRound(pre, i);
-            diff = _coord_diff(fwd(curr, checkChina), heck);
+            diff = _coord_diff(coordRound(fwd(curr, checkChina), roundPow), heck);
             if (Math.max(Math.abs(diff.lat), Math.abs(diff.lon)) === Math.max(Math.abs(minDiff.lat), Math.abs(minDiff.lon)) && i < minDigit || Math.max(Math.abs(diff.lat), Math.abs(diff.lon)) < Math.max(Math.abs(minDiff.lat), Math.abs(minDiff.lon))) {
                 minDiff = diff;
                 minDiffCurr = curr;
@@ -84,10 +86,11 @@ const bd_wgs_bored = __bored__(wgs_bd, bd_wgs);
 // 坐标转换精度测试
 // 每个 Array 中 [0] 表示转换后的坐标，[1] 表示来回转换后的坐标，[2] 表示转换前后的距离（米），[3] 表示来回转换与原坐标的距离（米）
 // 其中 [3] 可以反映精度
-const deltaTest = (coord, bored = true, eps = Number.EPSILON, maxTimes = 15) => {
+const deltaTest = (coord, bored = true, eps = Number.EPSILON, maxTimes = 15, roundPow) => {
+    coord = coordRound(coord, roundPow);
     const handle = (fwd, rev) => {
-        let result_fwd = fwd(coord, false, eps, maxTimes);
-        let result_rev = rev(result_fwd, false, eps, maxTimes);
+        let result_fwd = coordRound(fwd(coord, false, eps, maxTimes), roundPow);
+        let result_rev = coordRound(rev(result_fwd, false, eps, maxTimes), roundPow);
         return [result_fwd, result_rev, prcoords.distance(coord, result_fwd), prcoords.distance(coord, result_rev)];
     };
     return {
