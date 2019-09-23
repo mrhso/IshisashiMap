@@ -22,7 +22,7 @@ const __bored__ = (fwd, rev) => {
     const _coord_diff = (a, b) => ({ lat: a.lat - b.lat, lon: a.lon - b.lon });
 
     // eps 表示所求精度，maxTimes 表示最大迭代次数
-    return (heck, checkChina = true, eps = Number.EPSILON, maxTimes = 15) => {
+    return (heck, checkChina = true, eps = Number.EPSILON, maxTimes = 20) => {
         let curr = rev(heck, checkChina);
         let diff = { lat: Infinity, lon: Infinity };
         let minDiffCurr = curr;
@@ -85,7 +85,7 @@ const bd_wgs_bored = __bored__(wgs_bd, bd_wgs);
 // 坐标转换精度测试
 // 每个 Array 中 [0] 表示转换后的坐标，[1] 表示来回转换后的坐标，[2] 表示转换前后的距离（米），[3] 表示来回转换与原坐标的距离（米）
 // 其中 [3] 可以反映精度
-const deltaTest = (coord, bored = true, eps = Number.EPSILON, maxTimes = 15, inputRound, outputRound) => {
+const deltaTest = (coord, bored = true, eps = Number.EPSILON, maxTimes = 20, inputRound, outputRound) => {
     coord = coordRound(coord, inputRound);
     const handle = (fwd, rev) => {
         let result_fwd = coordRound(fwd(coord, false, eps, maxTimes), outputRound);
