@@ -89,7 +89,7 @@ const deltaTest = (coord, bored = true, eps = Number.EPSILON, maxTimes = 15, inp
     coord = coordRound(coord, inputRound);
     const handle = (fwd, rev) => {
         let result_fwd = coordRound(fwd(coord, false, eps, maxTimes), outputRound);
-        let result_rev = coordRound(rev(result_fwd, false, eps, maxTimes), inputRound;
+        let result_rev = coordRound(rev(result_fwd, false, eps, maxTimes), inputRound);
         return [result_fwd, result_rev, prcoords.distance(coord, result_fwd), prcoords.distance(coord, result_rev)];
     };
     return {
