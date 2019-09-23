@@ -23,7 +23,7 @@ const __bored__ = (fwd, rev) => {
 
     // eps 表示所求精度，maxTimes 表示最大迭代次数，roundPow 表示迭代过程中坐标的精度
     return (heck, checkChina = true, eps = Number.EPSILON, maxTimes = 15, roundPow) => {
-        heck = coordRound(heck, RoundPow);
+        heck = coordRound(heck, roundPow);
         let curr = coordRound(rev(heck, checkChina), roundPow);
         let diff = { lat: Infinity, lon: Infinity };
         let minDiffCurr = curr;
