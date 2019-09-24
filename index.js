@@ -2,27 +2,35 @@
 
 const prcoords = require('prcoords');
 const { OpenLocationCode } = require('open-location-code');
-const { isInGoogle } = require('./insane_is_in_china.js');
+const insane = require('./insane_is_in_china.js');
 const https = require('https');
 
 const isNumber = (arg) => Object.prototype.toString.call(arg) === '[object Number]';
 const round = (num, pow) => isNumber(pow) ? Math.sign(num) * Math.round(Math.abs(num) * Number(`1e${pow}`)) / Number(`1e${pow}`) : num;
 const coordRound = (coord, pow) => ({ lat: round(coord.lat, pow), lon: round(coord.lon, pow) });
 
-const wgs_gcj = (wgs, checkChina = true) => checkChina && !isInGoogle(wgs.lat, wgs.lon) ? (console.warn(`Non-Chinese coords found, returning as-is: (${wgs.lat}, ${wgs.lon})`), wgs) : prcoords.wgs_gcj(wgs, false);
-const gcj_wgs = (gcj, checkChina = true) => checkChina && !isInGoogle(gcj.lat, gcj.lon) ? (console.warn(`Non-Chinese coords found, returning as-is: (${gcj.lat}, ${gcj.lon})`), gcj) : prcoords.gcj_wgs(gcj, false);
+const isInBaidu = (coord) => insane.isInBaidu(coord.lat, coord.lon);
+const isInGoogle = (coord) => insane.isInGoogle(coord.lat, coord.lon);
 
-const gcj_bd = prcoords.gcj_bd;
-const bd_gcj = prcoords.bd_gcj;
+const wgs_gcj = (wgs, checkChina = true) => checkChina && !isInGoogle(wgs) ? (console.warn(`Non-Chinese coords found, returning as-is: (${wgs.lat}, ${wgs.lon})`), wgs) : prcoords.wgs_gcj(wgs, false);
+const gcj_wgs = (gcj, checkChina = true) => checkChina && !isInGoogle(gcj) ? (console.warn(`Non-Chinese coords found, returning as-is: (${gcj.lat}, ${gcj.lon})`), gcj) : prcoords.gcj_wgs(gcj, false);
 
-const wgs_bd = (bd, checkChina = true) => gcj_bd(wgs_gcj(bd, checkChina));
-const bd_wgs = (bd, checkChina = true) => gcj_wgs(bd_gcj(bd), checkChina);
+const gcj_bd = (gcj, checkChina = true) => checkChina && !isInGoogle(gcj) ? (console.warn(`Non-Chinese coords found, returning as-is: (${gcj.lat}, ${gcj.lon})`), gcj) : prcoords.gcj_bd(gcj);
+const bd_gcj = (bd, checkChina = true) => checkChina && !isInGoogle(bd) ? (console.warn(`Non-Chinese coords found, returning as-is: (${bd.lat}, ${bd.lon})`), bd) : prcoords.bd_gcj(bd);
+
+const wgs_bd = (bd, checkChina = true) => checkChina && !isInGoogle(bd) ? (console.warn(`Non-Chinese coords found, returning as-is: (${bd.lat}, ${bd.lon})`), bd) : prcoords.wgs_bd(bd, false);
+const bd_wgs = (bd, checkChina = true) => checkChina && !isInGoogle(bd) ? (console.warn(`Non-Chinese coords found, returning as-is: (${bd.lat}, ${bd.lon})`), bd) : prcoords.bd_wgs(bd, false);
 
 const __bored__ = (fwd, rev) => {
     const _coord_diff = (a, b) => ({ lat: a.lat - b.lat, lon: a.lon - b.lon });
 
     // eps 表示所求精度，maxTimes 表示最大迭代次数
     return (heck, checkChina = true, eps = Number.EPSILON, maxTimes = 20) => {
+        if (checkChina && !isInGoogle(heck)) {
+            console.warn(`Non-Chinese coords found, returning as-is: (${heck.lat}, ${heck.lon})`);
+            return heck;
+        };
+
         let curr = rev(heck, checkChina);
         let diff = { lat: Infinity, lon: Infinity };
         let minDiffCurr = curr;
@@ -165,4 +173,6 @@ module.exports = {
     amapConvert,
     lonlat2webmct,
     webmct2lonlat,
+    isInBaidu,
+    isInGoogle,
 };
