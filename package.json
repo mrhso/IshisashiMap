@@ -1,9 +1,9 @@
 {
     "name": "ishisashimap",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "description": "随便乱写的地图工具",
     "dependencies": {
-        "prcoords": "^1.0.2",
+        "prcoords": "^1.0.5",
         "open-location-code": "^1.0.3"
     },
     "engines": {
