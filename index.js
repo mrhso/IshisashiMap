@@ -5,7 +5,7 @@ const { OpenLocationCode } = require('open-location-code');
 const insane = require('./insane_is_in_china.js');
 const https = require('https');
 
-const round = (num, pow) => Math.sign(num) * Math.round(Math.abs(num) * Number(`1e${pow}`)) / Number(`1e${pow}`);
+const round = (num, pow) => pow === undefined ? num : Math.sign(num) * Math.round(Math.abs(num) * Number(`1e${pow}`)) / Number(`1e${pow}`);
 const coordsRound = (coords, pow) => ({ lat: round(coords.lat, pow), lon: round(coords.lon, pow) });
 
 const isInBaidu = (coords) => insane.isInBaidu(coords.lat, coords.lon);
