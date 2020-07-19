@@ -35,7 +35,7 @@ const __bored__ = (fwd, rev) => {
         let minDiffCurr = curr;
         let minDiff = diff;
 
-        // Wait till we hit fixed point or get bored
+        // 来吧，直到达到要求的那一刻……
         let i = 0;
         while (Math.max(Math.abs(diff.lat), Math.abs(diff.lon)) >= eps && i++ < maxTimes) {
             diff = _coord_diff(fwd(curr, false), heck);
@@ -44,40 +44,6 @@ const __bored__ = (fwd, rev) => {
             if (Math.max(Math.abs(diff.lat), Math.abs(diff.lon)) < Math.max(Math.abs(minDiff.lat), Math.abs(minDiff.lon))) {
                 minDiff = diff;
                 minDiffCurr = curr;
-            };
-        };
-
-        // 通过舍入寻找更合理的解
-        const getDigit = (num) => {
-            let str = num.toString();
-            let part = str.split('e');
-            if (part[1]) {
-                let pow = Number(part[1]);
-                if (pow < 0) {
-                    return -pow;
-                };
-            } else {
-                part = str.split('.');
-                if (part[1]) {
-                    return part[1].length;
-                };
-            };
-            return 0;
-        };
-        const coordsDigit = (coords) => Math.max(getDigit(coords.lat), getDigit(coords.lon));
-        let pre = minDiffCurr;
-        diff = minDiff;
-        curr = minDiffCurr;
-        let digit = coordsDigit(pre);
-        let minDigit = digit;
-        i = 0;
-        while (i++ < digit) {
-            curr = coordsRound(pre, i);
-            diff = _coord_diff(fwd(curr, false), heck);
-            if (Math.max(Math.abs(diff.lat), Math.abs(diff.lon)) === Math.max(Math.abs(minDiff.lat), Math.abs(minDiff.lon)) && i < minDigit || Math.max(Math.abs(diff.lat), Math.abs(diff.lon)) < Math.max(Math.abs(minDiff.lat), Math.abs(minDiff.lon))) {
-                minDiff = diff;
-                minDiffCurr = curr;
-                minDigit = i;
             };
         };
 
@@ -117,40 +83,6 @@ const olc2coords = (olc, near) => {
     return { lat: coords.latitudeCenter, lon: coords.longitudeCenter };
 };
 
-// 百度地图坐标转换 API
-// 用于测试 PRCoords 的算法，不建议直接使用
-const baiduGeoconv = (coords, from, to, ak, callback) => {
-    https.get(new URL(`https://api.map.baidu.com/geoconv/v1/?coords=${coords.lon},${coords.lat}&from=${from}&to=${to}&ak=${ak}`), (res) => {
-        let chunks = [];
-        res.on('data', (chunk) => {
-            chunks.push(chunk);
-        });
-        res.on('end', () => {
-            let chunk = JSON.parse(Buffer.concat(chunks).toString());
-            if (chunk.result) {
-                callback({ lat: chunk.result[0].y, lon: chunk.result[0].x });
-            };
-        });
-    });
-};
-
-// 高德地图坐标转换 API
-// 用于测试 PRCoords 的算法，不建议直接使用
-const amapConvert = (coords, coordsys, key, callback) => {
-    https.get(new URL(`https://restapi.amap.com/v3/assistant/coordinate/convert?locations=${coords.lon},${coords.lat}&coordsys=${coordsys}&key=${key}`), (res) => {
-        let chunks = [];
-        res.on('data', (chunk) => {
-            chunks.push(chunk);
-        });
-        res.on('end', () => {
-            let chunk = JSON.parse(Buffer.concat(chunks).toString());
-            if (chunk.locations) {
-                callback({ lat: Number(chunk.locations.split(',')[1]), lon: Number(chunk.locations.split(',')[0]) });
-            };
-        });
-    });
-};
-
 const latlon2webmct = (coords) => ({ x: (Math.PI / 180) * 6378137 * coords.lon, y: 6378137 * Math.log(Math.tan(Math.PI / 4 + (Math.PI / 180) * coords.lat / 2)) });
 const webmct2latlon = (coords) => ({ lat: (180 / Math.PI) * 2 * Math.atan(Math.exp(coords.y / 6378137)) - 90, lon: (180 / Math.PI) * coords.x / 6378137 });
 
@@ -168,8 +100,6 @@ module.exports = {
     bd_wgs_bored,
     deltaTest,
     olc2coords,
-    baiduGeoconv,
-    amapConvert,
     latlon2webmct,
     webmct2latlon,
     isInBaidu,
