@@ -1,6 +1,6 @@
 {
     "name": "ishisashimap",
-    "version": "1.0.5",
+    "version": "1.0.6",
     "description": "随便乱写的地图工具",
     "dependencies": {
         "prcoords": "^1.0.5",

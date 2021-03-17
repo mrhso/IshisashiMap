@@ -86,6 +86,36 @@ const olc2coords = (olc, near) => {
 const latlon2webmct = (coords) => ({ x: (Math.PI / 180) * 6378137 * coords.lon, y: 6378137 * Math.log(Math.tan(Math.PI / 4 + (Math.PI / 180) * coords.lat / 2)) });
 const webmct2latlon = (coords) => ({ lat: (180 / Math.PI) * 2 * Math.atan(Math.exp(coords.y / 6378137)) - 90, lon: (180 / Math.PI) * coords.x / 6378137 });
 
+const latlonh2ecef = (coords, a = 6378137, invf = 298.257223563) => {
+    let e2 = (2 * invf - 1) / invf ** 2;
+    let magic = (a / Math.sqrt(1 - e2 * Math.sin((Math.PI / 180) * coords.lat) ** 2) + (coords.h || 0)) * Math.cos((Math.PI / 180) * coords.lat);
+    let x = magic * Math.cos((Math.PI / 180) * coords.lon);
+    let y = magic * Math.sin((Math.PI / 180) * coords.lon);
+    let z = (a * (1 - e2) / Math.sqrt(1 - e2 * Math.sin((Math.PI / 180) * coords.lat) ** 2) + (coords.h || 0)) * Math.sin((Math.PI / 180) * coords.lat);
+    return { x: x, y: y, z: z };
+};
+const ecef2latlonh = (coords, a = 6378137, invf = 298.257223563) => {
+    let e2 = (2 * invf - 1) / invf ** 2;
+    let b = a * (invf - 1) / invf;
+    let r2 = coords.x ** 2 + coords.y ** 2;
+    let r = Math.sqrt(r2);
+    let eb2 = (2 * invf - 1) / (invf - 1) ** 2;
+    let F = 54 * b ** 2 * coords.z ** 2;
+    let G = r2 + (1 - e2) * coords.z ** 2 - e2 * (a ** 2 - b ** 2);
+    let c = e2 ** 2 * F * r2 / G ** 3;
+    let s = Math.cbrt(1 + c + Math.sqrt(c ** 2 + 2 * c));
+    let P = F / (3 * (s + 1 / s + 1) ** 2 * G ** 2);
+    let Q = Math.sqrt(1 + 2 * e2 ** 2 * P);
+    let r0 = -P * e2 * r / (1 + Q) + Math.sqrt(a ** 2 * (1 + 1 / Q) / 2 - P * (1 - e2) * coords.z ** 2 / (Q * (1 + Q)) - P * r2 / 2);
+    let U = Math.sqrt((r - e2 * r0) ** 2 + coords.z ** 2);
+    let V = Math.sqrt((r - e2 * r0) ** 2 + (1 - e2) * coords.z ** 2);
+    let z0 = b ** 2 * coords.z / (a * V);
+    let lat = (180 / Math.PI) * Math.atan((coords.z + eb2 * z0) / r);
+    let lon = (180 / Math.PI) * Math.atan2(coords.y, coords.x);
+    let h = U * (1 - b ** 2 / (a * V));
+    return { lat: lat, lon: lon, h: h };
+};
+
 module.exports = {
     coordsRound,
     wgs_gcj,
@@ -104,4 +134,6 @@ module.exports = {
     webmct2latlon,
     isInBaidu,
     isInGoogle,
+    latlonh2ecef,
+    ecef2latlonh,
 };
